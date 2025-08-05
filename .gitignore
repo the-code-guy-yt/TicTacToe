@@ -1,0 +1,26 @@
+# Ignore virtual environment folders
+venv/
+.env/
+.venv/
+
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore environment variables and secret files
+.env
+.env.*
+secrets.json
+config.yaml
+credentials.json
+*.pem
+*.key
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE settings (optional)
+.vscode/
+.idea/
