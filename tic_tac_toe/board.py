@@ -7,6 +7,10 @@ class Board:
     CHECKS = ROWS + COLS + DIAGS
 
     def reset(self) -> None:
+        """
+        Resets the board to an empty state
+        :return: Nothing
+        """
         self.board = [None] * 9
         self.move_log.clear()
         self._move = 0
