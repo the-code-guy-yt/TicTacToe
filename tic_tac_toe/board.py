@@ -23,6 +23,12 @@ class Board:
         self._move = 0
         
     def move(self, position: int, player_marker: str) -> bool:
+        """
+        Processes a player move
+        :param position: The position of the move on the board
+        :param player_marker: The marker of the player
+        :return: Whether the move was successful
+        """
         placed = False
         position -= 1
         if self.board[position] is None:
