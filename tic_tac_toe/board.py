@@ -11,16 +11,16 @@ class Board:
         Resets the board to an empty state
         :return: Nothing
         """
-        self.board = [None] * 9
+        self.board = [' '] * 9
+        self.available_moves = list(range(1,10))
         self.move_log.clear()
-        self._move = 0
     
     def __init__(self) -> None:
         self.player_markers_allowed = ['O', 'X']
+        self.available_moves = []
         self.board = []
         self.move_log = []
         self.reset()
-        self._move = 0
         
     def move(self, position: int, player_marker: str) -> bool:
         """
@@ -30,31 +30,31 @@ class Board:
         :return: Whether the move was successful
         """
         placed = False
-        position -= 1
-        if self.board[position] is None:
+        if position in self.available_moves:
+            self.available_moves.remove(position)
+            position -= 1
             self.board[position] = player_marker
             placed = True
             self.move_log.append(position)
-            self._move += 1
         
         return placed
 
     def undo(self):
         cell_pos = self.move_log.pop()
-        self.board[cell_pos] = None
-        self._move -= 1
+        self.available_moves.append(cell_pos+1)
+        self.board[cell_pos] = ' '
     
     @property
     def playable_cells(self) -> list:
-        return [cell_id + 1 for cell_id, cell in enumerate(self.board) if cell is None]
+        return self.available_moves[:]
 
     @property
     def turns_left(self):
-        return 9 - self._move
+        return len(self.available_moves)
     
     @property
     def game_over(self):
-        return self.turns_left == 0
+        return not self.available_moves
     
     @property
     def winner(self) -> str:
@@ -62,34 +62,26 @@ class Board:
         _winner = None
         for check in self.CHECKS:
             pos1, pos2, pos3 = check
-            if self.board[pos1] == self.board[pos2] == self.board[pos3] is not None:
+            if self.board[pos1] == self.board[pos2] == self.board[pos3] != ' ':
                 _winner = self.board[pos1]
                 break
             
         return _winner
-    
-    def render_cell(self, position):
-        ret = ' '
-        temp = self.board[position - 1]
-        if temp is not None:
-            ret = temp
-        
-        return ret
     
     def render(self):
         
         splitter = '--- --- ---\n'
         spacer = '   |   |   \n'
         board_str = spacer
-        board_str += f' {self.render_cell(7)} | {self.render_cell(8)} | {self.render_cell(9)}\n'
+        board_str += f' {self.board[6]} | {self.board[7]} | {self.board[8]}\n'
         board_str += spacer
         board_str += splitter
         board_str += spacer
-        board_str += f' {self.render_cell(4)} | {self.render_cell(5)} | {self.render_cell(6)}\n'
+        board_str += f' {self.board[3]} | {self.board[4]} | {self.board[5]}\n'
         board_str += spacer
         board_str += splitter
         board_str += spacer
-        board_str += f' {self.render_cell(1)} | {self.render_cell(2)} | {self.render_cell(3)}\n'
+        board_str += f' {self.board[0]} | {self.board[1]} | {self.board[2]}\n'
         board_str += spacer
         
         print(board_str)
