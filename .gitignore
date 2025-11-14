@@ -24,3 +24,8 @@ Thumbs.db
 # Ignore IDE settings (optional)
 .vscode/
 .idea/
+
+# Ignore uv env veriables
+uv.lock
+
+tic_tac_toe_suite.egg-info/
