@@ -16,12 +16,18 @@ class Board:
         self.move_log.clear()
     
     def __init__(self) -> None:
+        # Pre-compute checks for performance
+        self.checks_dict = {}
+        for i in range(9):
+            self.checks_dict[i] = [line for line in self.CHECKS if i in line]
+
         self.player_markers_allowed = ['O', 'X']
         self.available_moves = []
         self.board = []
         self.move_log = []
+        self._winner = None
         self.reset()
-        
+
     def move(self, position: int, player_marker: str) -> bool:
         """
         Processes a player move
@@ -36,13 +42,17 @@ class Board:
             self.board[position] = player_marker
             placed = True
             self.move_log.append(position)
-        
+            if len(self.available_moves) <= 4:
+                self.calc_winner(position)
+
         return placed
 
     def undo(self):
         cell_pos = self.move_log.pop()
         self.available_moves.append(cell_pos+1)
         self.board[cell_pos] = ' '
+
+        self._winner = None
     
     @property
     def playable_cells(self) -> list:
@@ -55,18 +65,20 @@ class Board:
     @property
     def game_over(self):
         return not self.available_moves
-    
-    @property
-    def winner(self) -> str:
+
+    def calc_winner(self, last_move):
+
+        filtered_checks = self.checks_dict[last_move]
         
-        _winner = None
-        for check in self.CHECKS:
+        for check in filtered_checks:
             pos1, pos2, pos3 = check
             if self.board[pos1] == self.board[pos2] == self.board[pos3] != ' ':
-                _winner = self.board[pos1]
+                self._winner = self.board[pos1]
                 break
-            
-        return _winner
+
+    @property
+    def winner(self) -> str|None:
+        return self._winner
     
     def render(self):
         

@@ -1,7 +1,7 @@
-import time;
+import time
 from tic_tac_toe.game import play_game
 
-runs = 500
+runs = 10000
 
 stats = {}
 
@@ -11,6 +11,7 @@ for x in range(runs):
     count = stats.get(temp, 0)
     stats[temp] = count + 1
 end = time.time()
+
 print(stats)
 print(end-start)
     

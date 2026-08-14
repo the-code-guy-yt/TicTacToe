@@ -30,9 +30,9 @@ class AIPlayer(Player):
         temp.remove(marker)
         self.opponent_marker = temp[0]
         
-    def evaluate_board_state(self) -> int:
-        if self.board.winner is not None:
-            if self.board.winner == self.marker:
+    def evaluate_board_state(self, board_winner) -> int:
+        if board_winner is not None:
+            if board_winner == self.marker:
                 score = 1
             else:
                 score = -1
@@ -42,22 +42,31 @@ class AIPlayer(Player):
         return score
     
     def mini_max(self, is_max: bool):
-        
-        if self.board.game_over or self.board.winner:
+
+        board_winner = None
+        if self.board.game_over:
             move = -1
-            best = self.evaluate_board_state()
+            board_winner = self.board.winner
+            best = self.evaluate_board_state(board_winner)
+
         else:
-            best = -2 if is_max else 2
-            actual_payer_marker = self.marker if is_max else self.opponent_marker
-            
-            for possible_move in self.board.playable_cells:
-                self.board.move(possible_move, actual_payer_marker)
-                score, _ = self.mini_max(not is_max)
-                self.board.undo()
-                
-                if (is_max and score > best) or (not is_max and score < best):
-                    best = score
-                    move = possible_move
+
+            if board_winner := self.board.winner:
+                move = -1
+                best = self.evaluate_board_state(board_winner)
+            else:
+
+                best = -2 if is_max else 2
+                actual_payer_marker = self.marker if is_max else self.opponent_marker
+
+                for possible_move in self.board.playable_cells:
+                    self.board.move(possible_move, actual_payer_marker)
+                    score, _ = self.mini_max(not is_max)
+                    self.board.undo()
+
+                    if (is_max and score > best) or (not is_max and score < best):
+                        best = score
+                        move = possible_move
             
         return best, move
         
